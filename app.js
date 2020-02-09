@@ -55,6 +55,7 @@ let table = document.createElement('table');
   let thead = document.createElement('thead')
   thead.innerHTML = `<td>Date and Time</td>
   <td>Wheater Desc.</td>
+  <td>Icon</td>
   <td>Temperature (C)</td>
   <td>Humidity (%)</td>
   <td>Wind Speed (m/s)</td>`
@@ -65,8 +66,9 @@ let table = document.createElement('table');
 let createRow = (data, el) => {
   for (let i = 0; i < data.length; i++){
     let tr = document.createElement('tr')
-    tr.innerHTML = `<td> ${new Date(data[i].dt*1000)}</td>
+    tr.innerHTML = `<td> ${new Date(data[i].dt*1000).toLocaleString()}</td>
     <td> ${data[i].weather[0].description}</td>
+    <td> <img src = "http://openweathermap.org/img/w/${data[i].weather[0].icon}.png"></td>
     <td> ${data[i].main.temp}</td>
     <td> ${data[i].main.humidity}</td>
     <td> ${data[i].wind.speed}</td>`
