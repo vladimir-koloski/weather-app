@@ -17,12 +17,20 @@ let navService = {
          });
       });
   },
+
   htmlElements: {
-    hourlyElement: document.querySelector(".page.hourly")
+    hourlyElement: document.querySelector(".page.hourly"),
+    statisticsResult: document.querySelector("#statisticsResult")
   }
+
+
 };
 
 document.getElementById("hourlyLink").addEventListener('click', function(){
+  getWheaterInfo();
+})
+
+document.getElementById("loadStatistics").addEventListener('click', function(){
   getWheaterInfo();
 })
 
@@ -38,6 +46,8 @@ function  getWheaterInfo(){
                 // let result = (JSON.parse(data));
                 console.log(data);
                 createTable(data.list, navService.htmlElements.hourlyElement);
+                loadStatistics(data.list, navService.htmlElements.statisticsResult);
+                
             },
             error: function(error) {
                 console.log(error);
@@ -75,5 +85,67 @@ let createRow = (data, el) => {
     el.appendChild(tr);
   }
 }
+
+function calculateStatistics(data){
+  let temperatureSum = 0;
+  let highestTemp = data.list[0];
+  let lowestTemp = data.list[0];
+  let humiditySum = 0;
+  let highestHumd = data.list[0]
+  let lowestHumd = data.list[0]
+  for(const item of data.list){
+    temperatureSum += item.main.temp
+    humiditySum += item.main.humidity
+
+    if(highestTemp.main.temp < item.main.temp){
+      highestTemp = item;
+    }
+    if(lowestTemp.main.temp > item.main.temp){
+      lowestTemp = item
+    }
+    if(highestHumd.main.temp < item.main.humidity){
+      highestHumd = item
+    }
+    if(lowestHumd.main.temp > item.main.humidity){
+      lowestHumd = item
+    }
+
+    return{
+      temperature:{
+      max: highestTemp.main.temp,
+      min: lowestTemp.main.temp,
+      avg: temperatureSum / data.list.length
+      },
+
+      humidity:{
+      max: highestHumd.main.temp,
+      min: lowestHumd.main.temp,
+      avg: humiditySum / data.list.length
+      },
+
+      warmestTime: new Date(highestTemp.dt * 1000),
+      coldestTime: new Date(lowestTemp.dt * 1000)      
+
+    }
+  }
+}
+
+
+
+
+function loadStatistics(data, el){
+  let statisticsResult = document.getElementById('statisticsResult');
+  const s = calculateStatistics(data)
+  el.innerHTML = '';
+  el.innerHTML = `
+  <div>Higher temperature ${s.temperature.max}</div>
+  <div>Lower temperature ${s.temperature.min}</div>
+  <div>Averege temperature ${s.temperature.avg}</div>
+  `
+  el.appendChild(statisticsResult)
+}
+
+
+
 
 
